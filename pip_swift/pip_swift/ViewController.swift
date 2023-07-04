@@ -25,6 +25,7 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "首页"
         
         // Do any additional setup after loading the view.
         
@@ -49,6 +50,10 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
         UIApplication.shared.beginBackgroundTask {
             UIApplication.shared.endBackgroundTask(UIBackgroundTaskIdentifier.invalid)
         }
+    }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let nvc = UINavigationController(rootViewController: EditViewController())
+        self.present(nvc, animated: true)
     }
     
     // 配置UI
