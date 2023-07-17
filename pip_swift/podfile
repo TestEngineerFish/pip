@@ -4,4 +4,7 @@ use_frameworks!
 
 target 'pip_swift' do
     pod 'SnapKit', '~> 5.0.0'
+    pod 'IQKeyboardManager'
+    pod 'ObjectMapper'
+    pod 'SQLite.swift', '~> 0.14.0'
 end

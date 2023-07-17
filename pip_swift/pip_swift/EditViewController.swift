@@ -10,58 +10,66 @@ import UIKit
 
 class EditViewController: UIViewController, UITextViewDelegate {
     
-    private lazy var leftBar: UIBarButtonItem = {
-        let item = UIBarButtonItem(title: "取消", style: .done, target: self, action: #selector(clickLeftBarAction))
-        return item
-    }()
+    @IBOutlet weak var rightBar: UIBarButtonItem!
     
-    private lazy var rightBar: UIBarButtonItem = {
-        let item = UIBarButtonItem(title: "取消", style: .done, target: self, action: #selector(clickRightBarAction))
-        return item
-    }()
+    @IBOutlet weak var playButton: UIButton!
     
-    private var editView: UITextView = {
-        let textView = UITextView()
-        textView.layer.cornerRadius = 15
-        textView.textContainerInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
-        textView.text = "请输入提示词"
-        textView.textColor = UIColor.lightGray
-        return textView
-    }()
+    @IBOutlet weak var textView: UITextView!
+    
+    
+    enum Status {
+        case review, edit
+    }
+    
+    private var status: Status = .review {
+        willSet {
+            switch newValue {
+            case .review:
+                rightBar.title = "编辑"
+                playButton.isHidden = false
+                title = "预览"
+                textView.resignFirstResponder()
+            case .edit:
+                rightBar.title = "保存"
+                playButton.isHidden = true
+                title = "编辑中……"
+                textView.becomeFirstResponder()
+            }
+        }
+    }
+    
+    
+    var editBlock: ((String)->Void)?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.initUI()
         self.initData()
-        self.view.backgroundColor = .orange
     }
     
     // MARK: ==== init ====
     private func initUI() {
-        self.title = "添加台词"
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "取消", style: .done, target: self, action: #selector(clickLeftBarAction))
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "取消", style: .done, target: self, action: #selector(clickRightBarAction))
-        self.view.addSubview(editView)
-        editView.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(15)
-            make.right.equalToSuperview().offset(-15)
-            make.top.equalToSuperview().offset(65)
-            make.bottom.equalToSuperview().offset(-55)
-        }
+        playButton.layer.cornerRadius = playButton.frame.height/2
+        textView.textContainerInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
     }
     
     private func initData() {
-        self.editView.delegate = self
+        self.status = .review
     }
     
     // MARK: ==== Event ====
-    @objc
-    private func clickLeftBarAction() {
-        self.navigationController?.dismiss(animated: true)
+    
+    @IBAction func clickRight(_ sender: UIBarButtonItem) {
+        switch status {
+        case .edit:
+            status = .review
+        case .review:
+            status = .edit
+        }
     }
     
-    @objc
-    private func clickRightBarAction() {
+    @IBAction func play(_ sender: UIButton) {
         
     }
     
@@ -71,6 +79,7 @@ class EditViewController: UIViewController, UITextViewDelegate {
             textView.text = nil
             textView.textColor = UIColor.black
         }
+        self.status = .edit
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {

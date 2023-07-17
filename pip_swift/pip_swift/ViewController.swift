@@ -23,6 +23,8 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
     // timer
     private var displayerLink: CADisplayLink!
     
+    private var content = "test/ntest"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "首页"
@@ -51,8 +53,15 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
             UIApplication.shared.endBackgroundTask(UIBackgroundTaskIdentifier.invalid)
         }
     }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let nvc = UINavigationController(rootViewController: EditViewController())
+        let vc = EditViewController()
+        vc.editBlock = { [weak self] value in
+            guard let self = self else { return }
+            self.content = value
+            self.setupCustomView()
+        }
+        let nvc = UINavigationController(rootViewController: vc)
         self.present(nvc, animated: true)
     }
     
@@ -126,23 +135,12 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
     // 配置自定义view
     private func setupCustomView() {
         customView = UIView()
-        customView.backgroundColor = .white
+        customView.backgroundColor = .clear
         
         textView = UITextView()
-        textView.text = """
-            文本文本开头
-            这是自定义view，想放什么放什么
-            这是自定义view，想放什么放什么
-            这是自定义view，想放什么放什么
-            这是自定义view，想放什么放什么
-            这是自定义view，想放什么放什么
-            文本
-            文本
-            文本
-            文本文本结尾
-            """
-        textView.backgroundColor = .black
-        textView.textColor = .white
+        textView.text = content
+        textView.backgroundColor = .clear
+        textView.textColor = .red
         textView.isUserInteractionEnabled = false
         customView.addSubview(textView)
         textView.snp.makeConstraints { (make) in
@@ -255,6 +253,15 @@ class ViewController: UIViewController, AVPictureInPictureControllerDelegate {
             // 使用自动布局
             customView.snp.makeConstraints { (make) -> Void in
                 make.edges.equalToSuperview()
+            }
+            window.backgroundColor = .clear
+            var superView: UIView? = window.superview
+            while superView != nil {
+                superView?.backgroundColor = .clear
+                superView = superView?.superview
+            }
+            UIApplication.shared.windows.forEach { w in
+                w.backgroundColor = .clear
             }
         }
     }
